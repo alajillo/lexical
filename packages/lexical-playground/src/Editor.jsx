@@ -7,27 +7,41 @@
  * @flow strict
  */
 
+import {
+  BLOCK_TRANSFORMERS,
+  createMarkdownExporter,
+  createMarkdownImporter,
+  TEXT_TRANSFORMERS,
+} from '@lexical/markdown';
 import AutoFocusPlugin from '@lexical/react/LexicalAutoFocusPlugin';
 import AutoScrollPlugin from '@lexical/react/LexicalAutoScrollPlugin';
 import CharacterLimitPlugin from '@lexical/react/LexicalCharacterLimitPlugin';
 import LexicalClearEditorPlugin from '@lexical/react/LexicalClearEditorPlugin';
 import {CollaborationPlugin} from '@lexical/react/LexicalCollaborationPlugin';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import HashtagsPlugin from '@lexical/react/LexicalHashtagPlugin';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LinkPlugin from '@lexical/react/LexicalLinkPlugin';
 import ListPlugin from '@lexical/react/LexicalListPlugin';
 import LexicalMarkdownShortcutPlugin from '@lexical/react/LexicalMarkdownShortcutPlugin';
+import LexicalOnChangePlugin from '@lexical/react/LexicalOnChangePlugin';
 import PlainTextPlugin from '@lexical/react/LexicalPlainTextPlugin';
 import RichTextPlugin from '@lexical/react/LexicalRichTextPlugin';
 import TablesPlugin from '@lexical/react/LexicalTablePlugin';
 import {$createHeadingNode} from '@lexical/rich-text';
-import {$createParagraphNode, $createTextNode, $getRoot} from 'lexical';
+import {
+  $createParagraphNode,
+  $createTextNode,
+  $getRoot,
+  $setSelection,
+} from 'lexical';
 import * as React from 'react';
-import {useRef} from 'react';
+import {useCallback, useMemo, useRef, useState} from 'react';
 
 import {createWebsocketProvider} from './collaboration';
 import {useSettings} from './context/SettingsContext';
 import {useSharedHistoryContext} from './context/SharedHistoryContext';
+import MarkdownEditor from './MarkdownEditor.jsx';
 import ActionsPlugin from './plugins/ActionsPlugin';
 import AutocompletePlugin from './plugins/AutocompletePlugin';
 import AutoLinkPlugin from './plugins/AutoLinkPlugin';
@@ -86,6 +100,7 @@ function prepopulatedRichText() {
 
 export default function Editor(): React$Node {
   const {historyState} = useSharedHistoryContext();
+  const [editor] = useLexicalComposerContext();
   const {
     settings: {
       isCollab,
@@ -104,6 +119,35 @@ export default function Editor(): React$Node {
     : 'Enter some plain text...';
   const placeholder = <Placeholder>{text}</Placeholder>;
   const scrollRef = useRef(null);
+  const updateToMarkdown = useMemo(() => {
+    const exportMarkdown = createMarkdownExporter(
+      BLOCK_TRANSFORMERS,
+      TEXT_TRANSFORMERS,
+    );
+    return () => {
+      editor.update(() => {
+        setMarkdown(exportMarkdown());
+      });
+    };
+  }, [editor]);
+  const [markdown, setMarkdown] = useState('');
+
+  const onChange = useCallback(() => {
+    updateToMarkdown();
+  }, [updateToMarkdown]);
+
+  const updateFromMarkdown = useMemo(() => {
+    const importMarkdown = createMarkdownImporter(
+      BLOCK_TRANSFORMERS,
+      TEXT_TRANSFORMERS,
+    );
+    return (markdownString) => {
+      editor.update(() => {
+        importMarkdown(markdownString);
+        $setSelection(null);
+      });
+    };
+  }, [editor]);
 
   return (
     <>
@@ -157,6 +201,7 @@ export default function Editor(): React$Node {
             <TwitterPlugin />
             <YouTubePlugin />
             <ClickableLinkPlugin />
+            <LexicalOnChangePlugin onChange={onChange} />
           </>
         ) : (
           <>
@@ -174,6 +219,7 @@ export default function Editor(): React$Node {
         <ActionsPlugin isRichText={isRichText} />
       </div>
       {showTreeView && <TreeViewPlugin />}
+      <MarkdownEditor value={markdown} onChange={updateFromMarkdown} />
     </>
   );
 }

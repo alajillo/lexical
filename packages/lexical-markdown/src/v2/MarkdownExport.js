@@ -11,7 +11,7 @@ import type {BlockTransformer, TextTransformer} from './MarkdownPlugin';
 import type {ElementNode, TextNode} from 'lexical';
 
 import {$isLinkNode} from '@lexical/link';
-import {$getRoot, $isElementNode, $isTextNode} from 'lexical';
+import {$getRoot, $isElementNode, $isLineBreakNode, $isTextNode} from 'lexical';
 
 export function createMarkdownExporter(
   blockTransformers: Array<BlockTransformer>,
@@ -48,7 +48,9 @@ function exportChildren(node: ElementNode): string {
   const output = [];
   const children = node.getChildren();
   for (const child of children) {
-    if ($isTextNode(child)) {
+    if ($isLineBreakNode(child)) {
+      output.push('\n');
+    } else if ($isTextNode(child)) {
       output.push(exportTextNode(child, child.getTextContent()));
     } else if ($isLinkNode(child)) {
       const linkContent = `[${child.getTextContent()}](${child.getURL()})`;

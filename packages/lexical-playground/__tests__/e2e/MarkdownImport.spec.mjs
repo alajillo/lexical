@@ -51,6 +51,7 @@ const MARKDOWN = `# Markdown Import
 This is *italic*, _italic_, **bold**, __bold__, ~~strikethrough~~ text
 This is *__~~bold italic strikethrough~~__* text, ___~~this one too~~___
 It ~~___works [with links](https://lexical.io)___~~ too
+*Nested **stars tags** are handled too*
 ### Headings
 # h1 Heading
 ## h2 Heading
@@ -150,6 +151,21 @@ const TRANSFORMED_HTML = html`
       </strong>
     </a>
     <span data-lexical-text="true">too</span>
+  </p>
+  <p
+    class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+    dir="ltr">
+    <em class="PlaygroundEditorTheme__textItalic" data-lexical-text="true">
+      Nested
+    </em>
+    <strong
+      class="PlaygroundEditorTheme__textBold PlaygroundEditorTheme__textItalic"
+      data-lexical-text="true">
+      stars tags
+    </strong>
+    <em class="PlaygroundEditorTheme__textItalic" data-lexical-text="true">
+      are handled too
+    </em>
   </p>
   <h3 class="PlaygroundEditorTheme__ltr" dir="ltr">
     <span data-lexical-text="true">Headings</span>

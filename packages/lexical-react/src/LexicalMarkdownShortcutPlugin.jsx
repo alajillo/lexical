@@ -12,6 +12,7 @@ import type {LexicalEditor} from 'lexical';
 import {
   BLOCK_TRANSFORMERS,
   createMarkdownExporter,
+  createMarkdownImporter,
   TEXT_TRANSFORMERS,
 } from '@lexical/markdown';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
@@ -46,3 +47,5 @@ export default function LexicalMarkdownShortcutPlugin(): React$MixedElement {
 
   return <pre>{markdown}</pre>;
 }
+
+export {createMarkdownExporter, createMarkdownImporter};
