@@ -1488,3 +1488,8 @@ button.action-button:disabled {
   outline: 2px solid rgb(60, 132, 244);
   user-select: none;
 }
+
+.embed-block.focused {
+  outline: 2px solid rgb(60, 132, 244);
+  user-select: none;
+}

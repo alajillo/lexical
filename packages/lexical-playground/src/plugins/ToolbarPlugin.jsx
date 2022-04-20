@@ -521,7 +521,9 @@ function InsertYouTubeDialog({
   activeEditor: LexicalEditor,
   onClose: () => void,
 }): React$Node {
-  const [text, setText] = useState('');
+  const [text, setText] = useState(
+    'https://www.youtube.com/watch?v=d-rl_caPTmk',
+  );
 
   const onClick = () => {
     const videoID = parseYouTubeVideoID(text);
