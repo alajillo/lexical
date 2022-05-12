@@ -6,7 +6,7 @@ Lexical relies on tests to ensure that changes don't break anything, using a mix
 
 We use Jest to run unit tests in core (`lexical` package). The goal is to have a well tested API, enabling us to add or modify features without breaking it.
 
-To run the tests use:
+To run the tests use:12
 
 ```
 npm run test-unit
